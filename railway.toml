@@ -1,0 +1,10 @@
+[deploy]
+numReplicas = 1
+restartPolicyType = "ON_FAILURE"
+
+[resources]
+# Memory limit (in MB)
+memoryMb = 512
+
+# CPU limit (in cores)
+cpuCores = 0.5

@@ -1,0 +1,263 @@
+{
+  "info": {
+    "name": "Nodo Premium Listings API",
+    "description": "Professional, error-free Postman collection for the premium listings API. All endpoints, always sends auth token, auto-extracts variables, and supports file upload.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "version": "1.0.0"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000/api/premium" },
+    { "key": "authToken", "value": "" },
+    { "key": "listingId", "value": "" }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [ { "key": "token", "value": "{{authToken}}", "type": "string" } ]
+  },
+  "item": [
+    {
+      "name": "🔑 Authentication",
+      "item": [
+        {
+          "name": "Login with Apple Dummy",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"test@example.com\",\n  \"firstName\": \"John\",\n  \"lastName\": \"Doe\"\n}" },
+            "url": { "raw": "http://localhost:3000/auth/dummy/apple", "host": ["http://localhost:3000"], "path": ["auth", "dummy", "apple"] },
+            "description": "Login using Apple Dummy endpoint to get authentication token"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200 && pm.response.json().token) {",
+                  "    pm.collectionVariables.set('authToken', pm.response.json().token);",
+                  "    console.log('Auth token set');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "🖥️ System",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{authToken}}" } ],
+            "url": { "raw": "{{baseUrl}}/health", "host": ["{{baseUrl}}"], "path": ["health"] },
+            "description": "Check system health and service status"
+          }
+        },
+        {
+          "name": "System Stats",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{authToken}}" } ],
+            "url": { "raw": "{{baseUrl}}/stats", "host": ["{{baseUrl}}"], "path": ["stats"] },
+            "description": "Get system statistics and metrics"
+          }
+        }
+      ]
+    },
+    {
+      "name": "🗂️ Categories",
+      "item": [
+        {
+          "name": "Get All Categories",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{authToken}}" } ],
+            "url": { "raw": "{{baseUrl}}/categories", "host": ["{{baseUrl}}"], "path": ["categories"] },
+            "description": "Get all available categories"
+          }
+        },
+        {
+          "name": "Get Category Details",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{authToken}}" } ],
+            "url": { "raw": "{{baseUrl}}/categories/vehicles", "host": ["{{baseUrl}}"], "path": ["categories", "vehicles"] },
+            "description": "Get specific category details and attributes"
+          }
+        },
+        {
+          "name": "Create Category",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{authToken}}" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"category_key\": \"test_category\",\n  \"display_name\": \"Test Category\",\n  \"description\": \"A test category for API testing\",\n  \"icon\": \"🧪\",\n  \"color\": \"#FF6B6B\",\n  \"sort_order\": 99,\n  \"attributes\": {\n    \"test_field\": {\n      \"type\": \"string\",\n      \"required\": false,\n      \"label\": \"Test Field\"\n    }\n  },\n  \"search_fields\": [\"test_field\"]\n}" },
+            "url": { "raw": "{{baseUrl}}/categories", "host": ["{{baseUrl}}"], "path": ["categories"] },
+            "description": "Create a new category"
+          }
+        },
+        {
+          "name": "Update Category",
+          "request": {
+            "method": "PUT",
+            "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{authToken}}" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"display_name\": \"Updated Test Category\",\n  \"description\": \"Updated description\"\n}" },
+            "url": { "raw": "{{baseUrl}}/categories/test_category", "host": ["{{baseUrl}}"], "path": ["categories", "test_category"] },
+            "description": "Update an existing category"
+          }
+        },
+        {
+          "name": "Delete Category",
+          "request": {
+            "method": "DELETE",
+            "header": [ { "key": "Authorization", "value": "Bearer {{authToken}}" } ],
+            "url": { "raw": "{{baseUrl}}/categories/test_category", "host": ["{{baseUrl}}"], "path": ["categories", "test_category"] },
+            "description": "Delete a category"
+          }
+        }
+      ]
+    },
+    {
+      "name": "📦 Listings",
+      "item": [
+        {
+          "name": "Create Listing",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Authorization", "value": "Bearer {{authToken}}" } ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "category", "value": "vehicles", "type": "text" },
+                { "key": "title", "value": "Test Toyota Corolla 2020", "type": "text" },
+                { "key": "description", "value": "Well-maintained Toyota Corolla with low mileage", "type": "text" },
+                { "key": "price", "value": "15000", "type": "text" },
+                { "key": "location", "value": "{\"city\": \"Islamabad\", \"country\": \"PK\", \"coordinates\": {\"lat\": 33.6844, \"lng\": 73.0479}}", "type": "text" },
+                { "key": "attributes", "value": "{\"make\": \"Toyota\", \"model\": \"Corolla\", \"year\": 2020, \"mileage\": 45000, \"fuel_type\": \"petrol\", \"transmission\": \"automatic\", \"condition\": \"used\", \"color\": \"Silver\", \"body_type\": \"sedan\", \"doors\": 4, \"seats\": 5}", "type": "text" },
+                { "key": "images", "type": "file", "src": [] }
+              ]
+            },
+            "url": { "raw": "{{baseUrl}}/listings", "host": ["{{baseUrl}}"], "path": ["listings"] },
+            "description": "Create a new listing with images (requires auth)"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201 && pm.response.json().data && pm.response.json().data.id) {",
+                  "    pm.collectionVariables.set('listingId', pm.response.json().data.id);",
+                  "    console.log('Listing ID set:', pm.response.json().data.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Listing by ID",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{authToken}}" } ],
+            "url": { "raw": "{{baseUrl}}/listings/{{listingId}}", "host": ["{{baseUrl}}"], "path": ["listings", "{{listingId}}"] },
+            "description": "Get a specific listing by ID"
+          }
+        },
+        {
+          "name": "Get My Listings",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{authToken}}" } ],
+            "url": { "raw": "{{baseUrl}}/listings/my?limit=20&offset=0", "host": ["{{baseUrl}}"], "path": ["listings", "my"], "query": [ { "key": "limit", "value": "20" }, { "key": "offset", "value": "0" } ] },
+            "description": "Get current user's listings"
+          }
+        },
+        {
+          "name": "Get Listings by Category",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{authToken}}" } ],
+            "url": { "raw": "{{baseUrl}}/listings/category/vehicles?limit=20&offset=0", "host": ["{{baseUrl}}"], "path": ["listings", "category", "vehicles"], "query": [ { "key": "limit", "value": "20" }, { "key": "offset", "value": "0" } ] },
+            "description": "Get listings by category"
+          }
+        },
+        {
+          "name": "Search Listings",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{authToken}}" } ],
+            "url": { "raw": "{{baseUrl}}/listings/search?q=toyota&category=vehicles&limit=10", "host": ["{{baseUrl}}"], "path": ["listings", "search"], "query": [ { "key": "q", "value": "toyota" }, { "key": "category", "value": "vehicles" }, { "key": "limit", "value": "10" } ] },
+            "description": "Search listings by text (vector search)"
+          }
+        },
+        {
+          "name": "Search by Attributes",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{authToken}}" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"category\": \"vehicles\",\n  \"filters\": {\n    \"make\": \"Toyota\",\n    \"fuel_type\": \"petrol\"\n  },\n  \"limit\": 10,\n  \"offset\": 0\n}" },
+            "url": { "raw": "{{baseUrl}}/listings/search/attributes", "host": ["{{baseUrl}}"], "path": ["listings", "search", "attributes"] },
+            "description": "Search listings by attributes"
+          }
+        },
+        {
+          "name": "Update Listing",
+          "request": {
+            "method": "PUT",
+            "header": [ { "key": "Authorization", "value": "Bearer {{authToken}}" } ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "title", "value": "Updated Toyota Corolla 2020", "type": "text" },
+                { "key": "description", "value": "Updated description", "type": "text" },
+                { "key": "price", "value": "16000", "type": "text" },
+                { "key": "images", "type": "file", "src": [] }
+              ]
+            },
+            "url": { "raw": "{{baseUrl}}/listings/{{listingId}}", "host": ["{{baseUrl}}"], "path": ["listings", "{{listingId}}"] },
+            "description": "Update a listing (own listings only)"
+          }
+        },
+        {
+          "name": "Delete Listing",
+          "request": {
+            "method": "DELETE",
+            "header": [ { "key": "Authorization", "value": "Bearer {{authToken}}" } ],
+            "url": { "raw": "{{baseUrl}}/listings/{{listingId}}", "host": ["{{baseUrl}}"], "path": ["listings", "{{listingId}}"] },
+            "description": "Delete a listing (own listings only)"
+          }
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "test",
+      "script": {
+        "exec": [
+          "// Auto-extract listing ID from create response",
+          "if (pm.response.code === 201 && pm.request.url.path.includes('/listings') && pm.request.method === 'POST') {",
+          "    const response = pm.response.json();",
+          "    if (response.success && response.data && response.data.id) {",
+          "        pm.collectionVariables.set('listingId', response.data.id);",
+          "        console.log('Listing ID set:', response.data.id);",
+          "    }",
+          "}",
+          "",
+          "// Auto-extract auth token from login response",
+          "if (pm.response.code === 200 && pm.request.url.path.includes('/auth/dummy/apple')) {",
+          "    const response = pm.response.json();",
+          "    if (response.success && response.token) {",
+          "        pm.collectionVariables.set('authToken', response.token);",
+          "        console.log('Auth token set');",
+          "    }",
+          "}"
+        ],
+        "type": "text/javascript"
+      }
+    }
+  ]
+} 
